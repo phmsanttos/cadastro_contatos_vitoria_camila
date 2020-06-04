@@ -2,7 +2,6 @@
 
 class ContatosController extends Controller
 {
-
     /**
      * Lista os contatos
      */
@@ -40,7 +39,12 @@ class ContatosController extends Controller
         $contato->nome     = $this->request->nome;
         $contato->telefone = $this->request->telefone;
         $contato->email    = $this->request->email;
-        if ($contato->save()) {
+
+        $usuario           = new Usuario;
+        $usuario->nome     = $this->request->nome;
+        $usuario->email    = $this->request->email;
+
+        if ($contato->save() && $usuario->save()) {
             return $this->listar();
         }
     }
@@ -55,8 +59,13 @@ class ContatosController extends Controller
         $contato->nome     = $this->request->nome;
         $contato->telefone = $this->request->telefone;
         $contato->email    = $this->request->email;
-        $contato->save();
 
+        $usuario           = Usuario::find($id);
+        $usuario->nome     = $this->request->nome;
+        $usuario->email    = $this->request->email;
+
+        $contato->save();
+        $usuario->save();
         return $this->listar();
     }
 
@@ -67,6 +76,9 @@ class ContatosController extends Controller
     {
         $id      = (int) $dados['id'];
         $contato = Contato::destroy($id);
+
+        $usuario = Usuario::destroy($id);
+    
         return $this->listar();
     }
 }
