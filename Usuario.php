@@ -1,7 +1,7 @@
 <?php
 
 
-class Contato
+class Usuario
 {
     private $atributos;
 
@@ -27,14 +27,14 @@ class Contato
     }
 
     /**
-     * Salvar o contato
+     * Salvar o usuario
      * @return boolean
      */
     public function save()
     {
         $colunas = $this->preparar($this->atributos);
         if (!isset($this->id)) {
-            $query = "INSERT INTO contatos (".
+            $query = "INSERT INTO usuarios (".
                 implode(', ', array_keys($colunas)).
                 ") VALUES (".
                 implode(', ', array_values($colunas)).");";       
@@ -44,7 +44,7 @@ class Contato
                     $definir[] = "{$key}={$value}";
                 }
             }
-            $query = "UPDATE contatos SET ".implode(', ', $definir)." WHERE id='{$this->id}';";
+            $query = "UPDATE usuarios SET ".implode(', ', $definir)." WHERE id='{$this->id}';";
         }
         if ($conexao = Conexao::getInstance()) {
             $stmt = $conexao->prepare($query);
@@ -90,33 +90,13 @@ class Contato
     }
 
     /**
-     * Retorna uma lista de contatos
-     * @return array/boolean
-     */
-    public static function all()
-    {
-        $conexao = Conexao::getInstance();
-        $stmt    = $conexao->prepare("SELECT * FROM contatos;");
-        $result  = array();
-        if ($stmt->execute()) {
-            while ($rs = $stmt->fetchObject(Contato::class)) {
-                $result[] = $rs;
-            }
-        }
-        if (count($result) > 0) {
-            return $result;
-        }
-        return false;
-    }
-
-    /**
      * Retornar o número de registros
      * @return int/boolean
      */
     public static function count()
     {
         $conexao = Conexao::getInstance();
-        $count   = $conexao->exec("SELECT count(*) FROM contatos;");
+        $count   = $conexao->exec("SELECT count(*) FROM usuarios;");
         if ($count) {
             return (int) $count;
         }
@@ -131,10 +111,10 @@ class Contato
     public static function find($id)
     {
         $conexao = Conexao::getInstance();
-        $stmt    = $conexao->prepare("SELECT * FROM contatos WHERE id='{$id}';");
+        $stmt    = $conexao->prepare("SELECT * FROM usuarios WHERE id='{$id}';");
         if ($stmt->execute()) {
             if ($stmt->rowCount() > 0) {
-                $resultado = $stmt->fetchObject('Contato');
+                $resultado = $stmt->fetchObject('Usuario');
                 if ($resultado) {
                     return $resultado;
                 }
@@ -151,7 +131,7 @@ class Contato
     public static function destroy($id)
     {
         $conexao = Conexao::getInstance();
-        if ($conexao->exec("DELETE FROM contatos WHERE id='{$id}';")) {
+        if ($conexao->exec("UPDATE usuarios SET ativo = 0 WHERE id='{$id}';")) {
             return true;
         }
         return false;

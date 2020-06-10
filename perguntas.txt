@@ -1,0 +1,23 @@
+SQL PARA CRIAÇÃO DA TABELA DE USUARIOS:
+
+CREATE TABLE IF NOT EXISTS usuarios(
+    id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nome varchar(80) NOT NULL,
+    email varchar(80),
+    senha varchar(8) NOT NULL,
+    ativo boolean DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+	updated_at TIMESTAMP NOT NULL DEFAULT NOW() ON UPDATE now()
+    );
+----------------------------------------------------
+1) O que você faria para melhorá-lo?
+Percebe-se que o usuário gerado há uma entidade no BD para senha, porém não é requisitada no cadastro do mesmo, então a ideia seria o software criar uma senha aleatória, criptografá-la em hash md5, e enviar para o e-mail cadastrado para que o usuário possa realizar o login no sistema que for implementado esses dados cadastrados, sendo possível posteriormente a troca dessa senha se for de desejo do usuário.
+
+2) Como fazer uma alteração para incluir uma exclusão lógica nesse modelo?
+Exclusão lógica seria basicamente você excluir o contato, porém desativar o usuário, pois são boas práticas não realizar a exclusão total de um usuário, visto que alguns dados precisam continuar armazenados, mas ao mesmo tempo não podemos deixar que aquele usuário realize login e utilize o sistema, portanto no momento que a função DESTROY é chamada realiza a ação de DELETE da tabela de contato para evitar que liste e uma ação de UPDATE da tabela de usuários no campo de ATIVO para 0 (false).
+
+3) Quais padrões de projetos você identifica nesse projeto e quais você poderia implementar?
+
+4) Como incluir tratamento de exceção?
+Existem diversos tratamentos de exceções que poderiam ser colocados num CRUD, por exemplo, existem alguns campos do BD que não podem ser NULL, portanto são campos obrigatórios para que sejam preenchidos, no momento de criar um novo contato, caso esses campos estejam em branco, deve ser informado que deve ser preenchidos, assim como campo como telefone receber apenas números, e-mail receber apenas padrões de e-mail. Também podemos acrescentar uma busca no BD no momento que o contato é criado, para que não ajam dois ou mais cadastros de um mesmo contato.
+
